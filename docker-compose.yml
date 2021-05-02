@@ -1,0 +1,30 @@
+version: '3.0'
+
+volumes:
+  postgres-data:
+
+services:
+  pgdb:
+    image: postgres:13
+    env_file: ".env"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    restart: always
+  django:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8888
+    volumes:
+      - .:/usr/src/nicvape
+    ports:
+      - "8888:8888"
+    env_file: ".env"
+    restart: always
+  telegram: 
+    build: .
+    volumes:
+      - .:/usr/src/nicvape
+    command:  /bin/sh -c "cd nicvape_app/nicvape_bot && python app.py"
+    env_file: ".env"
+    restart: always
